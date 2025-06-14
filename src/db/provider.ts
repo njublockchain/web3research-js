@@ -77,8 +77,28 @@ export class ClickHouseProvider {
         format: options?.format || 'JSONEachRow',
       });
 
-      const jsonResult = await result.json<T>();
-      return Array.isArray(jsonResult) ? jsonResult : [jsonResult as T];
+      // Check if result exists and handle potential undefined response
+      if (!result) {
+        console.warn('Empty response received from ClickHouse');
+        return [];
+      }
+
+      try {
+        const jsonResult = await result.json<T>();
+        return Array.isArray(jsonResult) ? jsonResult : [jsonResult as T];
+      } catch (jsonError) {
+        console.error('Failed to parse JSON from response:', jsonError);
+        // Try to get text response if JSON parsing fails
+        try {
+          const textResult = await result.text();
+          console.log('Text response from ClickHouse:', textResult);
+          // Return empty array with warning since we couldn't parse the response
+          return [];
+        } catch (textError) {
+          console.error('Failed to get text response:', textError);
+          return [];
+        }
+      }
     } catch (error) {
       console.error('Query failed:', error);
       throw error;

@@ -1,0 +1,46 @@
+{
+  "name": "web3research",
+  "private": false,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "TypeScript SDK for Web3Research Platform (Frontend-only)",
+  "main": "./dist/web3research.umd.js",
+  "module": "./dist/web3research.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "web3",
+    "web3research",
+    "blockchain",
+    "ethereum",
+    "tron",
+    "bitcoin",
+    "clickhouse",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch",
+    "serve": "python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "@clickhouse/client-web": "^1.6.0",
+    "bs58": "^5.0.0",
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "@vitest/coverage-v8": "^2.0.0",
+    "jsdom": "^25.0.1",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^2.0.0"
+  }
+}

@@ -7,9 +7,28 @@
   "main": "./dist/web3research.umd.js",
   "module": "./dist/web3research.es.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/web3research.es.js",
+      "require": "./dist/web3research.umd.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/web3research-js.git"
+  },
+  "homepage": "https://github.com/your-org/web3research-js#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/web3research-js/issues"
+  },
+  "author": "Your Name <your-email@example.com>",
+  "license": "MIT",
   "keywords": [
     "web3",
     "web3research",
@@ -22,13 +41,17 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:js": "vite build",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "publish:token": "node scripts/publish.js",
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest --watch",
-    "serve": "python3 -m http.server 8080"
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "@clickhouse/client-web": "^1.6.0",

@@ -41,8 +41,8 @@ export class Web3Research {
       apiToken: this.config.apiToken,
       backend: options.backend || this.config.backend,
       database: options.database || 'ethereum',
-      settings: { ...this.config.settings, ...options.settings },
-      genericArgs: { ...this.config.genericArgs, ...options.genericArgs },
+      settings: (this.config.settings || options.settings) ? { ...this.config.settings, ...options.settings } : undefined,
+      genericArgs: (this.config.genericArgs || options.genericArgs) ? { ...this.config.genericArgs, ...options.genericArgs } : undefined,
     };
 
     return new EthereumProvider(config);
@@ -79,8 +79,8 @@ export class Web3Research {
       apiToken: this.config.apiToken,
       backend: options.backend || this.config.backend,
       database: options.database || 'bitcoin',
-      settings: { ...this.config.settings, ...options.settings },
-      genericArgs: { ...this.config.genericArgs, ...options.genericArgs },
+      settings: (this.config.settings || options.settings) ? { ...this.config.settings, ...options.settings } : undefined,
+      genericArgs: (this.config.genericArgs || options.genericArgs) ? { ...this.config.genericArgs, ...options.genericArgs } : undefined,
     };
 
     return new BitcoinProvider(config);
@@ -117,8 +117,8 @@ export class Web3Research {
       apiToken: this.config.apiToken,
       backend: options.backend || this.config.backend,
       database: options.database || 'tron',
-      settings: { ...this.config.settings, ...options.settings },
-      genericArgs: { ...this.config.genericArgs, ...options.genericArgs },
+      settings: (this.config.settings || options.settings) ? { ...this.config.settings, ...options.settings } : undefined,
+      genericArgs: (this.config.genericArgs || options.genericArgs) ? { ...this.config.genericArgs, ...options.genericArgs } : undefined,
     };
 
     return new TronProvider(config);

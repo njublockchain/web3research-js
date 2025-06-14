@@ -60,17 +60,17 @@ export const createMockBlockData = () => ({
 
 export const createMockTransactionData = () => ({
   hash: '0x123...',
-  blockNumber: 18000000,
+  blockNumber: '18000000',
   blockHash: '0x456...',
-  transactionIndex: 0,
+  transactionIndex: '0',
   from: '0x742d35cc6635c0532925a3b8d400beb8ae174c4b',
   to: '0xa0b86a33e6e6b36c3009a1b4b7b2fec3aab7893a',
   value: '1000000000000000000',
   gas: '21000',
   gasPrice: '20000000000',
-  nonce: 42,
+  nonce: '42',
   input: '0x',
-  type: 2,
-  status: 1,
+  type: '2',
+  status: '1',
   gasUsed: '21000',
 });

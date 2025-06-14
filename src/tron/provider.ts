@@ -57,46 +57,52 @@ export class TronProvider extends ClickHouseProvider {
   }
 
   async blocks(options: QueryOptions = {}): Promise<TronBlockData[]> {
-    const { where, orderBy = { number: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.blocks 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.blocks`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     const rawData = await this.query<TronBlockData>(query, { parameters });
     return this.applyFormats(rawData, TRON_BLOCK_COLUMN_FORMATS);
   }
 
   async transactions(options: QueryOptions = {}): Promise<TronTransactionData[]> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.transactions 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.transactions`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     const rawData = await this.query<TronTransactionData>(query, { parameters });
     return this.applyFormats(rawData, TRON_TRANSACTION_COLUMN_FORMATS);

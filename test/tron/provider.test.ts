@@ -102,7 +102,23 @@ describe('TronProvider', () => {
 
   describe('transactions', () => {
     it('should query Tron transactions with default options', async () => {
-      const mockTxs = [{
+      const rawTxs = [{
+        hash: '0x123...',
+        blockNumber: '50000000',
+        blockHash: '0x456...',
+        type: 'TransferContract',
+        ownerAddress: 'TLyqzVGLV1srkB7dToTAEqgDSfPtXRJZYH',
+        toAddress: 'TMuA6YqfCeX8EhbfYEg5y7S4DqzSJireY9',
+        amount: '1000000',
+        energy: '0',
+        energyUsage: '0',
+        bandwidth: '268',
+        bandwidthUsage: '268',
+        fee: '0',
+        result: 'SUCCESS'
+      }];
+      
+      const expectedTxs = [{
         hash: '0x123...',
         blockNumber: 50000000,
         blockHash: '0x456...',
@@ -117,7 +133,8 @@ describe('TronProvider', () => {
         fee: BigInt('0'),
         result: 'SUCCESS'
       }];
-      mockQuery.mockResolvedValue(mockTxs);
+      
+      mockQuery.mockResolvedValue(rawTxs);
 
       const result = await provider.transactions();
 
@@ -125,7 +142,7 @@ describe('TronProvider', () => {
         expect.stringContaining('SELECT * FROM tron.transactions'),
         { parameters: undefined }
       );
-      expect(result).toEqual(mockTxs);
+      expect(result).toEqual(expectedTxs);
     });
 
     it('should apply Tron transaction column formats', async () => {

@@ -17,46 +17,52 @@ export class EthereumProvider extends ClickHouseProvider {
   }
 
   async blocks(options: QueryOptions = {}): Promise<BlockData[]> {
-    const { where, orderBy = { number: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.blocks 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.blocks`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     const rawData = await this.query<BlockData>(query, { parameters });
     return applyColumnFormats(rawData, ETHEREUM_BLOCK_COLUMN_FORMATS);
   }
 
   async* blocksStream(options: QueryOptions = {}): AsyncGenerator<BlockData, void, unknown> {
-    const { where, orderBy = { number: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.blocks 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.blocks`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     for await (const rawRow of this.queryStream<BlockData>(query, { parameters })) {
       const formattedRows = applyColumnFormats([rawRow], ETHEREUM_BLOCK_COLUMN_FORMATS);
@@ -65,46 +71,52 @@ export class EthereumProvider extends ClickHouseProvider {
   }
 
   async transactions(options: QueryOptions = {}): Promise<TransactionData[]> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.transactions 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.transactions`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     const rawData = await this.query<TransactionData>(query, { parameters });
     return applyColumnFormats(rawData, ETHEREUM_TRANSACTION_COLUMN_FORMATS);
   }
 
   async* transactionsStream(options: QueryOptions = {}): AsyncGenerator<TransactionData, void, unknown> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.transactions 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.transactions`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     for await (const rawRow of this.queryStream<TransactionData>(query, { parameters })) {
       const formattedRows = applyColumnFormats([rawRow], ETHEREUM_TRANSACTION_COLUMN_FORMATS);
@@ -113,46 +125,52 @@ export class EthereumProvider extends ClickHouseProvider {
   }
 
   async events(options: QueryOptions = {}): Promise<EventData[]> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.events 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.events`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     const rawData = await this.query<EventData>(query, { parameters });
     return applyColumnFormats(rawData, ETHEREUM_EVENT_COLUMN_FORMATS);
   }
 
   async* eventsStream(options: QueryOptions = {}): AsyncGenerator<EventData, void, unknown> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.events 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.events`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     for await (const rawRow of this.queryStream<EventData>(query, { parameters })) {
       const formattedRows = applyColumnFormats([rawRow], ETHEREUM_EVENT_COLUMN_FORMATS);
@@ -161,46 +179,52 @@ export class EthereumProvider extends ClickHouseProvider {
   }
 
   async traces(options: QueryOptions = {}): Promise<TraceData[]> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.traces 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.traces`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     const rawData = await this.query<TraceData>(query, { parameters });
     return applyColumnFormats(rawData, ETHEREUM_TRACE_COLUMN_FORMATS);
   }
 
   async* tracesStream(options: QueryOptions = {}): AsyncGenerator<TraceData, void, unknown> {
-    const { where, orderBy = { blockNumber: true }, limit = 100, offset = 0, parameters } = options;
+    const { where, orderBy, limit, offset, parameters } = options;
     
-    const wherePhrase = where ? `WHERE ${where}` : '';
-    const orderByPhrase = orderBy 
-      ? `ORDER BY ${Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ')}`
-      : '';
-    const limitPhrase = limit ? `LIMIT ${limit}` : '';
-    const offsetPhrase = offset ? `OFFSET ${offset}` : '';
-
-    const query = `
-      SELECT * 
-      FROM ${this.database}.traces 
-      ${wherePhrase} 
-      ${orderByPhrase} 
-      ${limitPhrase}
-      ${offsetPhrase}
-    `;
+    let query = `SELECT * FROM ${this.database}.traces`;
+    
+    if (where) {
+      query += ` WHERE ${where}`;
+    }
+    
+    if (orderBy) {
+      const orderByClause = Object.entries(orderBy).map(([k, v]) => `${k} ${v ? 'ASC' : 'DESC'}`).join(', ');
+      query += ` ORDER BY ${orderByClause}`;
+    }
+    
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    if (offset !== undefined && offset > 0) {
+      query += ` OFFSET ${offset}`;
+    }
 
     for await (const rawRow of this.queryStream<TraceData>(query, { parameters })) {
       const formattedRows = applyColumnFormats([rawRow], ETHEREUM_TRACE_COLUMN_FORMATS);

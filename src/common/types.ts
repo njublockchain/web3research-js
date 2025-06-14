@@ -25,6 +25,13 @@ export class Address {
         if (this.addrHex.length !== 40) {
           throw new Error('Invalid ETH address');
         }
+        // Validate hex format
+        if (!/^[0-9a-fA-F]{40}$/.test(this.addrHex)) {
+          throw new Error('Invalid ETH address');
+        }
+      } else if (addr.startsWith('0x')) {
+        // Invalid length Ethereum address
+        throw new Error('Invalid ETH address');
       } else if (addr.startsWith('T') && addr.length === 34) {
         // TRON address (base58)
         try {
@@ -43,9 +50,20 @@ export class Address {
         if (this.addrHex.length !== 40) {
           throw new Error('Invalid TRON address');
         }
+        // Validate hex format
+        if (!/^[0-9a-fA-F]{40}$/.test(this.addrHex)) {
+          throw new Error('Invalid TRON address');
+        }
+      } else if (addr.startsWith('41')) {
+        // Invalid length TRON hex address
+        throw new Error('Invalid TRON address');
       } else if (addr.length === 40) {
         // Raw hex address
         this.addrHex = addr;
+        // Validate hex format
+        if (!/^[0-9a-fA-F]{40}$/.test(this.addrHex)) {
+          throw new Error('Invalid address');
+        }
       } else {
         throw new Error('Invalid address');
       }

@@ -2,13 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SingleEventDecoder, ContractDecoder } from '../../src/evm/decoder.js';
 import { createMockEventLog } from '../setup.js';
 
+// Create mock functions
+const mockParseLog = vi.fn();
+const mockGetEvent = vi.fn();
+const mockParseTransaction = vi.fn();
+const mockGetFunction = vi.fn();
+
 // Mock ethers Interface
 vi.mock('ethers', () => ({
-  Interface: vi.fn().mockImplementation((abi) => ({
-    parseLog: vi.fn(),
-    getEvent: vi.fn(),
-    parseTransaction: vi.fn(),
-    getFunction: vi.fn(),
+  Interface: vi.fn().mockImplementation(() => ({
+    parseLog: mockParseLog,
+    getEvent: mockGetEvent,
+    parseTransaction: mockParseTransaction,
+    getFunction: mockGetFunction,
   }))
 }));
 
@@ -24,11 +30,9 @@ describe('SingleEventDecoder', () => {
   };
 
   let decoder: SingleEventDecoder;
-  let mockInterface: any;
 
   beforeEach(() => {
-    const { Interface } = require('ethers');
-    mockInterface = new Interface();
+    vi.clearAllMocks();
     decoder = new SingleEventDecoder(transferEventABI);
   });
 
@@ -63,8 +67,8 @@ describe('SingleEventDecoder', () => {
         }
       };
 
-      mockInterface.parseLog.mockReturnValue(mockParsedLog);
-      mockInterface.getEvent.mockReturnValue({
+      mockParseLog.mockReturnValue(mockParsedLog);
+      mockGetEvent.mockReturnValue({
         inputs: [
           { name: 'from', type: 'address' },
           { name: 'to', type: 'address' },
@@ -74,7 +78,7 @@ describe('SingleEventDecoder', () => {
 
       const result = decoder.decode(eventLog);
 
-      expect(mockInterface.parseLog).toHaveBeenCalledWith({
+      expect(mockParseLog).toHaveBeenCalledWith({
         topics: eventLog.topics,
         data: eventLog.data,
         address: eventLog.address,
@@ -95,14 +99,14 @@ describe('SingleEventDecoder', () => {
 
     it('should throw error when parsing fails', () => {
       const eventLog = createMockEventLog();
-      mockInterface.parseLog.mockReturnValue(null);
+      mockParseLog.mockReturnValue(null);
 
       expect(() => decoder.decode(eventLog)).toThrow('Failed to parse event log');
     });
 
     it('should throw error when ethers throws', () => {
       const eventLog = createMockEventLog();
-      mockInterface.parseLog.mockImplementation(() => {
+      mockParseLog.mockImplementation(() => {
         throw new Error('Invalid log');
       });
 
@@ -133,11 +137,9 @@ describe('ContractDecoder', () => {
   ];
 
   let decoder: ContractDecoder;
-  let mockInterface: any;
 
   beforeEach(() => {
-    const { Interface } = require('ethers');
-    mockInterface = new Interface();
+    vi.clearAllMocks();
     decoder = new ContractDecoder(contractABI);
   });
 
@@ -163,7 +165,7 @@ describe('ContractDecoder', () => {
         }
       };
 
-      mockInterface.parseLog.mockReturnValue(mockParsedLog);
+      mockParseLog.mockReturnValue(mockParsedLog);
 
       const result = decoder.decodeEvent(eventLog);
 
@@ -178,7 +180,7 @@ describe('ContractDecoder', () => {
 
     it('should return null when parsing fails', () => {
       const eventLog = createMockEventLog();
-      mockInterface.parseLog.mockReturnValue(null);
+      mockParseLog.mockReturnValue(null);
 
       const result = decoder.decodeEvent(eventLog);
 
@@ -187,7 +189,7 @@ describe('ContractDecoder', () => {
 
     it('should return null when ethers throws', () => {
       const eventLog = createMockEventLog();
-      mockInterface.parseLog.mockImplementation(() => {
+      mockParseLog.mockImplementation(() => {
         throw new Error('Invalid log');
       });
 
@@ -212,11 +214,11 @@ describe('ContractDecoder', () => {
         }
       };
 
-      mockInterface.parseTransaction.mockReturnValue(mockParsedTx);
+      mockParseTransaction.mockReturnValue(mockParsedTx);
 
       const result = decoder.decodeFunction(functionInput);
 
-      expect(mockInterface.parseTransaction).toHaveBeenCalledWith({ data: functionInput });
+      expect(mockParseTransaction).toHaveBeenCalledWith({ data: functionInput });
       expect(result).toEqual({
         functionName: 'transfer',
         functionSignature: 'transfer(address,uint256)',
@@ -227,7 +229,7 @@ describe('ContractDecoder', () => {
 
     it('should return null when parsing fails', () => {
       const functionInput = '0xinvalid';
-      mockInterface.parseTransaction.mockReturnValue(null);
+      mockParseTransaction.mockReturnValue(null);
 
       const result = decoder.decodeFunction(functionInput);
 
@@ -240,16 +242,16 @@ describe('ContractDecoder', () => {
       const mockEventFragment = {
         topicHash: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
       };
-      mockInterface.getEvent.mockReturnValue(mockEventFragment);
+      mockGetEvent.mockReturnValue(mockEventFragment);
 
       const result = decoder.getEventTopic('Transfer');
 
-      expect(mockInterface.getEvent).toHaveBeenCalledWith('Transfer');
+      expect(mockGetEvent).toHaveBeenCalledWith('Transfer');
       expect(result).toBe('0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef');
     });
 
     it('should return null when event not found', () => {
-      mockInterface.getEvent.mockReturnValue(null);
+      mockGetEvent.mockReturnValue(null);
 
       const result = decoder.getEventTopic('NonExistentEvent');
 
@@ -257,7 +259,7 @@ describe('ContractDecoder', () => {
     });
 
     it('should return null when ethers throws', () => {
-      mockInterface.getEvent.mockImplementation(() => {
+      mockGetEvent.mockImplementation(() => {
         throw new Error('Event not found');
       });
 
@@ -272,16 +274,16 @@ describe('ContractDecoder', () => {
       const mockFunctionFragment = {
         selector: '0xa9059cbb'
       };
-      mockInterface.getFunction.mockReturnValue(mockFunctionFragment);
+      mockGetFunction.mockReturnValue(mockFunctionFragment);
 
       const result = decoder.getFunctionSelector('transfer');
 
-      expect(mockInterface.getFunction).toHaveBeenCalledWith('transfer');
+      expect(mockGetFunction).toHaveBeenCalledWith('transfer');
       expect(result).toBe('0xa9059cbb');
     });
 
     it('should return null when function not found', () => {
-      mockInterface.getFunction.mockReturnValue(null);
+      mockGetFunction.mockReturnValue(null);
 
       const result = decoder.getFunctionSelector('nonExistentFunction');
 
@@ -289,7 +291,7 @@ describe('ContractDecoder', () => {
     });
 
     it('should return null when ethers throws', () => {
-      mockInterface.getFunction.mockImplementation(() => {
+      mockGetFunction.mockImplementation(() => {
         throw new Error('Function not found');
       });
 

@@ -38,21 +38,35 @@ describe('BitcoinProvider', () => {
 
   describe('blocks', () => {
     it('should query Bitcoin blocks with default options', async () => {
-      const mockBlocks = [{
-        height: 800000,
+      const rawBlocks = [{
+        height: '800000',
         hash: '0x123...',
         previousBlockHash: '0x456...',
         timestamp: '1692000000',
+        size: '1500000',
+        weight: '4000000',
+        version: '1',
+        merkleRoot: '0x789...',
+        nonce: '12345',
+        bits: '386469955',
+        difficulty: '31.25',
+        transactionCount: '2500'
+      }];
+      const expectedBlocks = [{
+        height: 800000,
+        hash: '0x123...',
+        previousBlockHash: '0x456...',
+        timestamp: new Date(1692000000 * 1000),
         size: 1500000,
         weight: 4000000,
         version: 1,
         merkleRoot: '0x789...',
         nonce: 12345,
         bits: '386469955',
-        difficulty: '31.25T',
+        difficulty: 31.25,
         transactionCount: 2500
       }];
-      mockQuery.mockResolvedValue(mockBlocks);
+      mockQuery.mockResolvedValue(rawBlocks);
 
       const result = await provider.blocks();
 
@@ -60,7 +74,7 @@ describe('BitcoinProvider', () => {
         expect.stringContaining('SELECT * FROM bitcoin.blocks'),
         { parameters: undefined }
       );
-      expect(result).toEqual(mockBlocks);
+      expect(result).toEqual(expectedBlocks);
     });
 
     it('should query blocks with custom options', async () => {

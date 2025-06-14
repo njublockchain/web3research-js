@@ -53,7 +53,13 @@ describe('EthereumProvider', () => {
         expect.stringContaining('SELECT * FROM ethereum.blocks'),
         { parameters: undefined }
       );
-      expect(result).toEqual(mockBlocks);
+      // Expect formatted data, not raw mock data
+      expect(result[0].number).toBe(18000000);
+      expect(result[0].timestamp).toBeInstanceOf(Date);
+      expect(result[0].gasLimit).toBe(BigInt('30000000'));
+      expect(result[0].gasUsed).toBe(BigInt('15000000'));
+      expect(result[0].difficulty).toBe(BigInt('0'));
+      expect(result[0].totalDifficulty).toBe(BigInt('58750003716598352816469'));
     });
 
     it('should query blocks with custom options', async () => {
@@ -135,8 +141,24 @@ describe('EthereumProvider', () => {
 
   describe('transactions', () => {
     it('should query transactions with default options', async () => {
-      const mockTxs = [createMockTransactionData()];
-      mockQuery.mockResolvedValue(mockTxs);
+      const rawTxs = [createMockTransactionData()];
+      const expectedTxs = [{
+        hash: '0x123...',
+        blockNumber: 18000000,
+        blockHash: '0x456...',
+        transactionIndex: 0,
+        from: '0x742d35cc6635c0532925a3b8d400beb8ae174c4b',
+        to: '0xa0b86a33e6e6b36c3009a1b4b7b2fec3aab7893a',
+        value: 1000000000000000000n,
+        gas: 21000n,
+        gasPrice: 20000000000n,
+        nonce: 42,
+        input: '0x',
+        type: 2,
+        status: 1,
+        gasUsed: 21000n,
+      }];
+      mockQuery.mockResolvedValue(rawTxs);
 
       const result = await provider.transactions();
 
@@ -144,7 +166,7 @@ describe('EthereumProvider', () => {
         expect.stringContaining('SELECT * FROM ethereum.transactions'),
         { parameters: undefined }
       );
-      expect(result).toEqual(mockTxs);
+      expect(result).toEqual(expectedTxs);
     });
 
     it('should query transactions with WHERE clause', async () => {
